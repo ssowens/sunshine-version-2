@@ -18,17 +18,26 @@ package com.example.android.sunshine.app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import static com.example.android.sunshine.app.MainActivity.LOG_TAG;
+
 public class DetailActivity extends ActionBarActivity {
+
+    private ShareActionProvider mShareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +57,58 @@ public class DetailActivity extends ActionBarActivity {
         ((FrameLayout) findViewById(R.id.container)).addView(forecastTextView);
     }
 
+    public static class DetailFragment extends Fragment {
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.detail, menu);
-        return true;
+        private final static String FORECAST_SHARE_HASHTAG = " SunshineApp";
+        private String mForecastStr;
+
+        public DetailFragment() {
+            setHasOptionsMenu(true);
+
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                                 @Nullable Bundle savedInstanceState) {
+            View view = inflater.inflate(R.layout.fragment_detail, container, false);
+
+            Intent intent = getActivity().getIntent();
+            if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
+                String mForecastStr = intent.getStringExtra(Intent.EXTRA_TEXT);
+                ((TextView) view.findViewById(R.id.detail_text)).setText(mForecastStr);
+            }
+
+            return view;
+        }
+
+        private Intent createShareForecastIntent() {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_TEXT,
+                    mForecastStr + FORECAST_SHARE_HASHTAG);
+            return shareIntent;
+        }
+
+        @Override
+        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+            // Inflate the menu; this adds items to the action bar if it is present.
+            inflater.inflate(R.menu.detailfragment, menu);
+
+            // Locate MenuItem with ShareActionProvider
+            MenuItem item = menu.findItem(R.id.menu_item_share);
+
+            // Fetch and store ShareActionProvider
+            ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat
+                    .getActionProvider(item);
+
+            if (mShareActionProvider != null) {
+                mShareActionProvider.setShareIntent(createShareForecastIntent());
+            } else {
+                Log.d(LOG_TAG, "Share Action Provider is Null");
+            }
+        }
+
     }
 
     @Override
@@ -72,6 +127,7 @@ public class DetailActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 
     /**
      * A placeholder fragment containing a simple view.

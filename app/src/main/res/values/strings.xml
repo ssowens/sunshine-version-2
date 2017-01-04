@@ -20,6 +20,7 @@
     <string name="pref_key_temperature_settings">pref_temperature</string>
     <string name="pref_key_location_settings">pref_location</string>
     <string name="preferred_location">Map Location</string>
+    <string name="action_share">Share</string>
 
 
 
