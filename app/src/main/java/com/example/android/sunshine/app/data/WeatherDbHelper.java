@@ -18,9 +18,12 @@ package com.example.android.sunshine.app.data;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.android.sunshine.app.data.WeatherContract.LocationEntry;
 import com.example.android.sunshine.app.data.WeatherContract.WeatherEntry;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Manages a local database for weather data.
@@ -74,12 +77,14 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
         final String SQL_CREATE_LOCATION_TABLE = "CREATE TABLE " + LocationEntry.TABLE_NAME + " (" +
 
                 // AutoIncrement for unique key
-                LocationEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                LocationEntry._ID + " INTEGER PRIMARY KEY," +
 
                 LocationEntry.COLUMN_CITY_NAME + " TEXT NOT NULL, " +
-                LocationEntry.COLUMN_COORD_LAT + " TEXT NOT NULL, " +
-                LocationEntry.COLUMN_COORD_LONG + " TEXT NOT NULL, " +
-                LocationEntry.COLUMN_LOCATION_SETTING + " TEXT UNIQUE NOT NULL";
+                LocationEntry.COLUMN_COORD_LAT + " REAL NOT NULL, " +
+                LocationEntry.COLUMN_COORD_LONG + " REAL NOT NULL, " +
+                LocationEntry.COLUMN_LOCATION_SETTING + " TEXT UNIQUE NOT NULL);";
+
+        Log.i(TAG, SQL_CREATE_LOCATION_TABLE);
 
         sqLiteDatabase.execSQL(SQL_CREATE_LOCATION_TABLE);
 
